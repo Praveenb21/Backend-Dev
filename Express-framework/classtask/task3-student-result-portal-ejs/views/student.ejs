@@ -1,0 +1,9 @@
+<%- include('partials/header') %>
+<h2>Student Details</h2>
+<p>ID: <%= student.id %></p>
+<p>Name: <%= student.name %></p>
+<p>Marks: <%= student.marks %></p>
+<p>Grade: <%= student.grade %></p>
+<p class="<%= student.marks>=40?'pass':'fail' %>">Status: <%= student.marks>=40?'Pass':'Fail' %></p>
+<a href="/students">⬅ Back to List</a>
+<%- include('partials/footer') %>

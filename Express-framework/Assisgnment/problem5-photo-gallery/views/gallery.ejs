@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Photo Gallery</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+        }
+        .gallery {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .card {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 8px;
+            width: 300px;
+        }
+        img {
+            width: 100%;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<h1> Photo Gallery</h1>
+
+<div class="gallery">
+    <% photos.forEach(photo => { %>
+        <div class="card">
+            <h3><%= photo.title %></h3>
+            <img src="<%= photo.imageUrl %>" alt="<%= photo.title %>">
+        </div>
+    <% }) %>
+</div>
+
+</body>
+</html>

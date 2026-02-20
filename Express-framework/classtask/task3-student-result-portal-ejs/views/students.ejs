@@ -1,0 +1,19 @@
+<%- include('partials/header') %>
+<a href="/add-student">➕ Add New Student</a>
+<h2>All Students</h2>
+<table>
+<tr>
+<th>ID</th><th>Name</th><th>Marks</th><th>Grade</th><th>Status</th><th>View</th>
+</tr>
+<% students.forEach(student=>{ %>
+<tr>
+<td><%= student.id %></td>
+<td><%= student.name %></td>
+<td><%= student.marks %></td>
+<td><%= student.grade %></td>
+<td class="<%= student.marks>=40?'pass':'fail' %>"><%= student.marks>=40?'Pass':'Fail' %></td>
+<td><a href="/students/<%= student.id %>">View</a></td>
+</tr>
+<% }) %>
+</table>
+<%- include('partials/footer') %>
