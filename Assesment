@@ -1,0 +1,128 @@
+Here you go — English only, written like a student's exam answer 👇
+
+## 1. SQL vs NoSQL — Key Differences
+So basically, both SQL and NoSQL are types of databases but they work in completely different ways.
+SQL stores data in tables, just like an Excel sheet — rows and columns. The schema is fixed, meaning you have to define the structure before inserting any data. Examples are MySQL and PostgreSQL.
+NoSQL stores data in a flexible format — could be documents, key-value pairs, or graphs. There is no fixed schema, so you can add fields whenever you want. Examples are MongoDB, Redis, Cassandra.
+A simple example to understand —
+SQL looks like this :
+sqlCREATE TABLE students (
+  id INT PRIMARY KEY,
+  name VARCHAR(100),
+  gpa FLOAT
+);
+MongoDB (NoSQL) looks like this —
+js{
+  "name": "Rahul",
+  "gpa": 3.8,
+  "hobbies": ["cricket", "coding"]   // extra fields allowed, no restrictions
+}
+The main difference is — SQL is rigid and structured, NoSQL is flexible. SQL scales vertically (buy a better machine), NoSQL scales horizontally (add more machines).
+
+## 2. CAP Theorem
+CAP theorem was given by Eric Brewer. It says that any distributed system cannot guarantee all three of these properties at the same time —
+
+C — Consistency → every read gets the latest data
+A — Availability → system always gives a response
+P — Partition Tolerance → system keeps running even if network fails between nodes
+
+Why can't we have all three together?
+Because in real life, network failures are bound to happen — packets drop, nodes crash. So P has to be kept always, otherwise there is no point of a distributed system.
+Now when a partition happens, the system has only two choices —
+
+Either give correct data (keep Consistency) — means some requests get rejected → Availability is lost
+
+
+Or respond to everyone (keep Availability) — means stale/old data might be returned → Consistency is lost
+
+So at any point, only two properties can be guaranteed —
+
+MongoDB → CP
+Cassandra → AP
+Traditional RDBMS on single node → CA
+
+
+## 3. Three Scenarios Where MongoDB is Better
+Scenario 1 — When you need a Flexible Schema
+Say there is an e-commerce site selling shoes, laptops, and food — all three have completely different attributes. In SQL you would need lots of NULL columns or very complex table structures. In MongoDB each product can just be its own document —
+js{ "type": "shoe", "size": 9, "color": "black" }
+{ "type": "laptop", "ram": "16GB", "brand": "Dell" }
+No problem at all.
+Scenario 2 — When data is Nested or Hierarchical
+Like a blog post that has comments, and comments have likes. In SQL you would need 3-4 tables and multiple JOINs. In MongoDB everything sits inside one document —
+js{
+  "post": "Great day today",
+  "comments": [
+    { "user": "Amit", "text": "Nice one!" }
+  ]
+}
+One single read and you get everything.
+Scenario 3 — When you need High Write Speed (IoT or Real-time apps)
+If thousands of sensors are sending data every second, MongoDB's horizontal sharding handles it easily. A relational database would struggle to manage that kind of load efficiently.
+
+## 4. Why Does MongoDB Use BSON Instead of JSON?
+JSON looks nice and readable for humans, but it is not efficient for storing data internally. That is why MongoDB uses BSON, which stands for Binary JSON.
+Why is BSON better?
+First — more data types. JSON only has string, number, boolean, array, object, null. BSON adds Date, ObjectId, int32, int64, Decimal128 — all of which are very important for a database to function properly.
+Second — speed. BSON is in binary format so the machine reads and writes it much faster. JSON is plain text and has to be parsed character by character, which is slow.
+Third — ObjectId. MongoDB gives every document a unique _id which is a BSON ObjectId — 12 bytes, auto-generated, and it even stores the timestamp inside it.
+Quick comparison —
+JSON :  { "age": 25 }  →  stored as text, slow to parse
+BSON :  age = \x19     →  stored as binary, direct memory access
+Simply put — JSON is for humans to read, BSON is for machines to process.
+
+## 5. MongoDB Queries — Students with GPA > 3.5 and Enrolled in CS101
+Assume the collection name is students and documents look like this —
+js{
+  "name": "Priya",
+  "gpa": 3.9,
+  "courses": ["CS101", "MATH101"]
+}
+
+
+Basic query —
+
+jsdb.students.find({
+  gpa: { $gt: 3.5 },
+  courses: "CS101"
+})
+
+
+Show only name and GPA (projection) —
+
+jsdb.students.find(
+  { gpa: { $gt: 3.5 }, courses: "CS101" },
+  { name: 1, gpa: 1, _id: 0 }
+)
+
+
+Sort by GPA in descending order —
+
+jsdb.students.find({
+  gpa: { $gt: 3.5 },
+  courses: "CS101"
+}).sort({ gpa: -1 })
+Count how many students match —
+jsdb.students.countDocuments({
+  gpa: { $gt: 3.5 },
+  courses: "CS101"
+})
+
+
+Aggregation — also find the average GPA —
+
+jsdb.students.aggregate([
+  {
+    $match: {
+      gpa: { $gt: 3.5 },
+      courses: "CS101"
+    }
+  },
+  {
+    $group: {
+      _id: null,
+      totalStudents: { $sum: 1 },
+      averageGPA: { $avg: "$gpa" }
+    }
+  }
+])
